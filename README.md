@@ -35,7 +35,7 @@ Public repository URL:
 https://github.com/GoodHatsLLC/no-ai-coauthors
 ```
 
-Use a tag or commit SHA for `rev` / `ref` when installing from the public URL. Using `main` is convenient for trying the hook, but a pinned revision is repeatable.
+Use the `1.0.0` tag for repeatable installation from the public URL.
 
 ## pre-commit
 
@@ -45,7 +45,7 @@ Add the hook repo to `.pre-commit-config.yaml`:
 default_install_hook_types: [pre-commit, commit-msg]
 repos:
   - repo: https://github.com/GoodHatsLLC/no-ai-coauthors
-    rev: <commit-sha-or-tag>
+    rev: 1.0.0
     hooks:
       - id: no-ai-coauthors
 ```
@@ -67,7 +67,7 @@ default_install_hook_types = ["pre-commit", "commit-msg"]
 
 [[repos]]
 repo = "https://github.com/GoodHatsLLC/no-ai-coauthors"
-rev = "<commit-sha-or-tag>"
+rev = "1.0.0"
 hooks = [{ id = "no-ai-coauthors" }]
 ```
 
@@ -86,7 +86,7 @@ This repo includes a root `lefthook.yml` and `.lefthook/commit-msg/no-ai-coautho
 ```yaml
 remotes:
   - git_url: https://github.com/GoodHatsLLC/no-ai-coauthors
-    ref: <commit-sha-or-tag>
+    ref: 1.0.0
     configs:
       - lefthook.yml
 ```
@@ -115,7 +115,7 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - uses: GoodHatsLLC/no-ai-coauthors@<commit-sha-or-tag>
+      - uses: GoodHatsLLC/no-ai-coauthors@1.0.0
 ```
 
 On `push`, the action checks commit messages from the GitHub event payload and does not require checkout.
@@ -128,7 +128,7 @@ steps:
   - uses: actions/checkout@v5
     with:
       fetch-depth: 0
-  - uses: GoodHatsLLC/no-ai-coauthors@<commit-sha-or-tag>
+  - uses: GoodHatsLLC/no-ai-coauthors@1.0.0
     with:
       commit-range: origin/main..HEAD
 ```
@@ -147,13 +147,13 @@ Download the public hook script and configure Git's `core.hooksPath`:
 ```sh
 mkdir -p .githooks
 curl -fsSL \
-  https://raw.githubusercontent.com/GoodHatsLLC/no-ai-coauthors/<commit-sha-or-tag>/hooks/no-ai-coauthors \
+  https://raw.githubusercontent.com/GoodHatsLLC/no-ai-coauthors/1.0.0/hooks/no-ai-coauthors \
   -o .githooks/commit-msg
 chmod +x .githooks/commit-msg
 git config core.hooksPath .githooks
 ```
 
-Replace `<commit-sha-or-tag>` with the same pinned revision you would use for a managed hook installation.
+Replace `1.0.0` with a newer released tag when you upgrade.
 
 ## Husky and simple-git-hooks
 
@@ -179,7 +179,7 @@ With `simple-git-hooks`, use:
 
 ```sh
 curl -fsSL \
-  https://raw.githubusercontent.com/GoodHatsLLC/no-ai-coauthors/<commit-sha-or-tag>/hooks/no-ai-coauthors \
+  https://raw.githubusercontent.com/GoodHatsLLC/no-ai-coauthors/1.0.0/hooks/no-ai-coauthors \
   -o /tmp/no-ai-coauthors
 chmod +x /tmp/no-ai-coauthors
 /tmp/no-ai-coauthors .git/COMMIT_EDITMSG
