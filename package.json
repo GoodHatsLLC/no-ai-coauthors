@@ -1,0 +1,22 @@
+{
+  "name": "no-ai-coauthors",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reject AI co-author and Claude-Session trailers in Git commit messages.",
+  "bin": {
+    "no-ai-coauthors": "hooks/no-ai-coauthors"
+  },
+  "scripts": {
+    "test": "sh tests/run.sh"
+  },
+  "files": [
+    "action.yml",
+    ".pre-commit-hooks.yaml",
+    ".lefthook/commit-msg/no-ai-coauthors",
+    "github-action/check-commit-messages",
+    "githooks/commit-msg",
+    "hooks/no-ai-coauthors",
+    "lefthook.yml",
+    "README.md"
+  ]
+}

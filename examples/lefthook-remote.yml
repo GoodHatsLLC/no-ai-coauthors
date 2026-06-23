@@ -1,0 +1,5 @@
+remotes:
+  - git_url: file:///Users/adamz/Developer/GoodHatsLLC/no-ai-coauthors
+    ref: <commit-sha-or-tag>
+    configs:
+      - lefthook.yml

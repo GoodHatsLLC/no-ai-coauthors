@@ -1,0 +1,304 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir=$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+repo_dir=$(CDPATH= cd "$script_dir/.." && pwd)
+hook="$repo_dir/hooks/no-ai-coauthors"
+
+if [[ ! -x "$hook" ]]; then
+  echo "::error title=no-ai-coauthors::Hook executable not found at $hook" >&2
+  exit 2
+fi
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+checked_count=0
+failure_count=0
+source_count=0
+
+lower() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+}
+
+fail_on_empty=true
+case "$(lower "${NO_AI_COAUTHORS_FAIL_ON_EMPTY:-true}")" in
+  0|false|no|off) fail_on_empty=false ;;
+esac
+
+python_bin=""
+if command -v python3 >/dev/null 2>&1; then
+  python_bin=python3
+elif command -v python >/dev/null 2>&1; then
+  python_bin=python
+fi
+
+require_python() {
+  if [[ -z "$python_bin" ]]; then
+    echo "::error title=no-ai-coauthors::python3 or python is required for GitHub event payload parsing" >&2
+    exit 2
+  fi
+}
+
+check_file() {
+  local label=$1
+  local path=$2
+  local output
+
+  checked_count=$((checked_count + 1))
+
+  if ! output=$("$hook" "$path" 2>&1); then
+    echo "::error title=no-ai-coauthors::$label contains forbidden AI attribution" >&2
+    printf '%s\n' "$output" >&2
+    failure_count=$((failure_count + 1))
+  fi
+}
+
+check_manifest() {
+  local manifest=$1
+  local label
+  local path
+
+  while IFS=$'\t' read -r label path; do
+    [[ -n "${path:-}" ]] || continue
+    check_file "$label" "$path"
+  done < "$manifest"
+}
+
+check_git_range() {
+  local range=$1
+  local shas="$tmpdir/git-shas"
+  local err="$tmpdir/git-err"
+  local sha
+  local msg_file
+
+  if ! command -v git >/dev/null 2>&1; then
+    echo "git is not available" >&2
+    return 1
+  fi
+
+  if ! git rev-list --reverse "$range" > "$shas" 2> "$err"; then
+    cat "$err" >&2
+    return 1
+  fi
+
+  while IFS= read -r sha; do
+    [[ -n "$sha" ]] || continue
+    msg_file="$tmpdir/git-$sha"
+    git log -n 1 --format=%B "$sha" > "$msg_file"
+    check_file "commit ${sha:0:12}" "$msg_file"
+  done < "$shas"
+}
+
+event_value() {
+  local expression=$1
+  local event_path=${GITHUB_EVENT_PATH:-}
+
+  [[ -n "$event_path" && -f "$event_path" ]] || return 1
+  require_python
+
+  "$python_bin" - "$event_path" "$expression" <<'PY'
+import json
+import sys
+
+event_path, expression = sys.argv[1:3]
+with open(event_path, "r", encoding="utf-8") as handle:
+    value = json.load(handle)
+
+for key in expression.split("."):
+    if isinstance(value, dict):
+        value = value.get(key)
+    else:
+        value = None
+    if value is None:
+        break
+
+if value is not None:
+    print(value)
+PY
+}
+
+check_push_event() {
+  local event_path=${GITHUB_EVENT_PATH:-}
+  local manifest="$tmpdir/push-manifest"
+  local out_dir="$tmpdir/push-messages"
+
+  [[ -n "$event_path" && -f "$event_path" ]] || return 1
+  require_python
+  mkdir -p "$out_dir"
+
+  "$python_bin" - "$event_path" "$out_dir" "$manifest" <<'PY'
+import json
+import pathlib
+import sys
+
+event_path, out_dir, manifest_path = sys.argv[1:4]
+out = pathlib.Path(out_dir)
+manifest = pathlib.Path(manifest_path)
+
+with open(event_path, "r", encoding="utf-8") as handle:
+    event = json.load(handle)
+
+commits = event.get("commits") or []
+if not commits and event.get("head_commit"):
+    commits = [event["head_commit"]]
+
+with manifest.open("w", encoding="utf-8") as manifest_handle:
+    for index, commit in enumerate(commits, 1):
+        commit_id = commit.get("id") or commit.get("sha") or str(index)
+        message = commit.get("message") or ""
+        path = out / f"push-{index}.txt"
+        path.write_text(message, encoding="utf-8")
+        manifest_handle.write(f"push commit {commit_id[:12]}\t{path}\n")
+PY
+
+  check_manifest "$manifest"
+}
+
+check_pull_request_api() {
+  local event_path=${GITHUB_EVENT_PATH:-}
+  local token=${NO_AI_COAUTHORS_GITHUB_TOKEN:-${NO_AI_COAUTHORS_DEFAULT_GITHUB_TOKEN:-}}
+  local manifest="$tmpdir/pr-api-manifest"
+  local out_dir="$tmpdir/pr-api-messages"
+  local commits_url
+
+  [[ -n "$event_path" && -f "$event_path" ]] || return 1
+  commits_url=$(event_value "pull_request.commits_url" || true)
+  [[ -n "$commits_url" ]] || return 1
+
+  require_python
+  mkdir -p "$out_dir"
+
+  "$python_bin" - "$commits_url" "$token" "$out_dir" "$manifest" <<'PY'
+import json
+import pathlib
+import sys
+import urllib.error
+import urllib.request
+
+url, token, out_dir, manifest_path = sys.argv[1:5]
+out = pathlib.Path(out_dir)
+manifest = pathlib.Path(manifest_path)
+headers = {
+    "Accept": "application/vnd.github+json",
+    "User-Agent": "no-ai-coauthors",
+    "X-GitHub-Api-Version": "2022-11-28",
+}
+if token:
+    headers["Authorization"] = f"Bearer {token}"
+
+def next_link(link_header):
+    if not link_header:
+        return None
+    for part in link_header.split(","):
+        pieces = part.split(";")
+        if len(pieces) < 2:
+            continue
+        link = pieces[0].strip()
+        rel = ";".join(pieces[1:])
+        if 'rel="next"' in rel and link.startswith("<") and link.endswith(">"):
+            return link[1:-1]
+    return None
+
+index = 0
+with manifest.open("w", encoding="utf-8") as manifest_handle:
+    while url:
+        request = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                commits = json.loads(response.read().decode("utf-8"))
+                link = response.headers.get("Link")
+        except urllib.error.HTTPError as error:
+            print(f"GitHub API request failed: HTTP {error.code}", file=sys.stderr)
+            sys.exit(1)
+        except urllib.error.URLError as error:
+            print(f"GitHub API request failed: {error}", file=sys.stderr)
+            sys.exit(1)
+
+        for commit in commits:
+            index += 1
+            sha = commit.get("sha") or str(index)
+            message = ((commit.get("commit") or {}).get("message")) or ""
+            path = out / f"pr-{index}.txt"
+            path.write_text(message, encoding="utf-8")
+            manifest_handle.write(f"pull request commit {sha[:12]}\t{path}\n")
+
+        url = next_link(link)
+PY
+
+  check_manifest "$manifest"
+}
+
+check_pull_request_git_range() {
+  local base
+  local head
+
+  base=$(event_value "pull_request.base.sha" || true)
+  head=$(event_value "pull_request.head.sha" || true)
+  [[ -n "$base" && -n "$head" ]] || return 1
+
+  check_git_range "$base..$head"
+}
+
+explicit_message_file=${NO_AI_COAUTHORS_COMMIT_MESSAGE_FILE:-}
+explicit_range=${NO_AI_COAUTHORS_COMMIT_RANGE:-}
+event_name=${GITHUB_EVENT_NAME:-}
+
+if [[ -n "$explicit_message_file" ]]; then
+  source_count=$((source_count + 1))
+  check_file "commit message file $explicit_message_file" "$explicit_message_file"
+fi
+
+if [[ -n "$explicit_range" ]]; then
+  source_count=$((source_count + 1))
+  if ! check_git_range "$explicit_range"; then
+    echo "::error title=no-ai-coauthors::Unable to inspect commit range: $explicit_range" >&2
+    exit 2
+  fi
+fi
+
+if [[ "$source_count" -eq 0 ]]; then
+  case "$event_name" in
+    push)
+      source_count=$((source_count + 1))
+      if ! check_push_event; then
+        echo "::error title=no-ai-coauthors::Unable to read push commit messages from GITHUB_EVENT_PATH" >&2
+        exit 2
+      fi
+      ;;
+    pull_request|pull_request_target)
+      source_count=$((source_count + 1))
+      if ! check_pull_request_api; then
+        echo "GitHub API pull request commit lookup failed; trying local git range." >&2
+        if ! check_pull_request_git_range; then
+          echo "::error title=no-ai-coauthors::Unable to inspect pull request commits." >&2
+          echo "Pass commit-range, or use actions/checkout with enough history for base.sha..head.sha." >&2
+          exit 2
+        fi
+      fi
+      ;;
+    *)
+      if [[ -n "${GITHUB_SHA:-}" ]] && command -v git >/dev/null 2>&1 \
+        && git cat-file -e "${GITHUB_SHA}^{commit}" >/dev/null 2>&1; then
+        source_count=$((source_count + 1))
+        check_git_range "$GITHUB_SHA"
+      fi
+      ;;
+  esac
+fi
+
+if [[ "$checked_count" -eq 0 ]]; then
+  if [[ "$fail_on_empty" == true ]]; then
+    echo "::error title=no-ai-coauthors::No commit messages were found to check." >&2
+    echo "Pass commit-message-file or commit-range, or run on push/pull_request events." >&2
+    exit 2
+  fi
+  echo "no-ai-coauthors: no commit messages found to check"
+fi
+
+if [[ "$failure_count" -gt 0 ]]; then
+  exit 1
+fi
+
+echo "no-ai-coauthors: checked $checked_count commit message(s)"

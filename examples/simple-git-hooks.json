@@ -1,0 +1,5 @@
+{
+  "simple-git-hooks": {
+    "commit-msg": "no-ai-coauthors \"$1\""
+  }
+}

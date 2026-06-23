@@ -1,0 +1,35 @@
+name: No AI Co-authors
+description: Reject AI Co-author trailers in commit messages.
+branding:
+  icon: git-commit
+  color: red
+inputs:
+  commit-message-file:
+    description: Path to a single commit-message file to check.
+    required: false
+    default: ""
+  commit-range:
+    description: Git revision range to check, for example origin/main..HEAD.
+    required: false
+    default: ""
+  github-token:
+    description: Token used to read pull request commits through the GitHub API.
+    required: false
+    default: ""
+  fail-on-empty:
+    description: Fail when the action cannot find any commit messages to check.
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: Check commit messages
+      shell: bash
+      env:
+        NO_AI_COAUTHORS_ACTION_PATH: ${{ github.action_path }}
+        NO_AI_COAUTHORS_COMMIT_MESSAGE_FILE: ${{ inputs.commit-message-file }}
+        NO_AI_COAUTHORS_COMMIT_RANGE: ${{ inputs.commit-range }}
+        NO_AI_COAUTHORS_GITHUB_TOKEN: ${{ inputs.github-token }}
+        NO_AI_COAUTHORS_DEFAULT_GITHUB_TOKEN: ${{ github.token }}
+        NO_AI_COAUTHORS_FAIL_ON_EMPTY: ${{ inputs.fail-on-empty }}
+      run: '"$NO_AI_COAUTHORS_ACTION_PATH/github-action/check-commit-messages"'

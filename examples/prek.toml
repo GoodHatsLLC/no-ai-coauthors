@@ -1,0 +1,6 @@
+default_install_hook_types = ["pre-commit", "commit-msg"]
+
+[[repos]]
+repo = "../GoodHatsLLC/no-ai-coauthors"
+rev = "<commit-sha-or-tag>"
+hooks = [{ id = "no-ai-coauthors" }]

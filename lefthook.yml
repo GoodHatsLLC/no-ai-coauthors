@@ -1,0 +1,4 @@
+commit-msg:
+  scripts:
+    "no-ai-coauthors":
+      runner: sh
