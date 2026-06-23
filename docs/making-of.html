@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Making of — no-ai-coauthors</title>
+<meta name="description" content="The complete, unedited transcript of the Claude Code session that built the no-ai-coauthors site." />
+<meta name="color-scheme" content="dark" />
+<style>
+  :root { --ink:#16130f; --paper:#f1ede4; --red:#e8554a; --term:#2d2a2e; --mut:#9a948c; }
+  html, body { margin:0; background:var(--term); }
+  body { padding-top:2.9rem; }
+
+  .mo-bar {
+    position:fixed; top:0; left:0; right:0; z-index:10;
+    display:flex; align-items:center; gap:1rem;
+    padding:.55rem 1rem; background:var(--ink); color:var(--paper);
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.8rem;
+    border-bottom:1px solid rgba(241,237,228,.14);
+  }
+  .mo-bar a { color:var(--paper); text-decoration:none; }
+  .mo-bar a:hover { color:var(--red); }
+  .mo-bar .spacer { flex:1; }
+  .mo-bar .tag { color:var(--mut); letter-spacing:.14em; text-transform:uppercase; font-size:.7rem; }
+
+  .mo-intro { max-width:46rem; padding:2.4rem 1.25rem 1.6rem; color:var(--paper); }
+  .mo-intro h1 {
+    font-family:Georgia,"Times New Roman",serif; font-weight:600;
+    font-size:clamp(1.7rem,4vw,2.5rem); letter-spacing:-.02em; line-height:1.04; margin:0 0 .9rem;
+  }
+  .mo-intro p {
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:1.02rem; line-height:1.62; color:rgba(241,237,228,.8); margin:0 0 .9rem; max-width:42rem;
+  }
+  .mo-intro code {
+    font-family:ui-monospace,Menlo,monospace; font-size:.88em;
+    background:rgba(241,237,228,.1); padding:.05em .35em; border-radius:2px;
+  }
+  .mo-intro .em { color:var(--paper); font-weight:600; }
+  .mo-intro .scrollnote {
+    font-family:ui-monospace,Menlo,monospace; font-size:.72rem; color:var(--mut); letter-spacing:.04em; margin-top:1.3rem;
+  }
+
+  .mo-foot { padding:2rem 1.25rem 3rem; border-top:1px solid rgba(241,237,228,.14); margin-top:2.4rem; }
+  .mo-foot a {
+    font-family:ui-monospace,Menlo,monospace; font-size:.82rem; color:var(--paper); text-decoration:none;
+    border:1px solid rgba(241,237,228,.3); padding:.55rem .95rem; display:inline-block;
+  }
+  .mo-foot a:hover { border-color:var(--red); color:var(--red); }
+
+  a:focus-visible { outline:2px solid var(--red); outline-offset:3px; }
+</style>
+</head>
+<body>
+
+<nav class="mo-bar">
+  <a href="index.html">&larr; no-ai-coauthors</a>
+  <span class="spacer"></span>
+  <span class="tag">making of &middot; claude code session</span>
+</nav>
+
+<header class="mo-intro">
+  <h1>Making of this website</h1>
+  <p>Below is the complete, unedited transcript of the Claude Code session that produced this site &mdash; from reading the repository to shipping the <code>docs/</code> folder, in one sitting.</p>
+  <p>It is published here in the spirit of the manifesto. The AI was a tool in the toolchain, shown in the open. <span class="em">It is not a co-author.</span> The author is, as ever, the contributing person.</p>
+  <p class="scrollnote">&harr; the terminal lines are wide &mdash; scroll sideways to read them in full.</p>
+</header>
+
+<!-- ===== begin verbatim session transcript ===== -->
+<div style="font-family: monospace; white-space: pre;background-color: #2d2a2e;color: #fcfcfa;">
+<div style="display: inline;color: rgb(214, 93, 14);">&#57526;</div><div style="display: inline;color: rgb(251, 241, 199);background-color: rgb(214, 93, 14);">&#983093; adamz </div><div style="display: inline;color: rgb(214, 93, 14);background-color: rgb(215, 153, 33);">&#57520;</div><div style="display: inline;color: rgb(251, 241, 199);background-color: rgb(215, 153, 33);"> &#8230;/no-ai-coauthors </div><div style="display: inline;color: rgb(215, 153, 33);background-color: rgb(104, 157, 106);">&#57520;</div><div style="display: inline;color: rgb(251, 241, 199);background-color: rgb(104, 157, 106);"> &#62488; marketing-site </div><div style="display: inline;color: rgb(104, 157, 106);background-color: rgb(69, 133, 136);">&#57520;</div><div style="display: inline;color: rgb(251, 241, 199);background-color: rgb(69, 133, 136);"> &#59160; v26.1.0 </div><div style="display: inline;color: rgb(69, 133, 136);background-color: rgb(102, 92, 84);">&#57520;</div><div style="display: inline;color: rgb(102, 92, 84);background-color: rgb(60, 56, 54);">&#57520;</div><div style="display: inline;color: rgb(60, 56, 54);">&#57524; </div>
+<div style="display: inline;color: rgb(152, 151, 26);font-weight: bold;">&#62514;</div> <div style="display: inline;color: rgb(169, 220, 118);">claude</div> --resume cc074f8b-57b3-45bf-8784-8e3a17867e0c
+<div style="display: inline;color: rgb(215, 119, 87);">&#9581;&#9472;&#9472;&#9472; Claude Code </div><div style="display: inline;color: rgb(153, 153, 153);">v2.1.186 </div><div style="display: inline;color: rgb(215, 119, 87);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9582;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;                                                    </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474; </div><div style="display: inline;color: rgb(215, 119, 87);font-weight: bold;">Tips for getting started                                                                                                                                                                                                </div><div style="display: inline;color: rgb(215, 119, 87);">&#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;                 </div><div style="display: inline;font-weight: bold;">Welcome back adam!                 </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474; </div>Run /init to create a CLAUDE.md file with instructions for Claude                                                                                                                                                       <div style="display: inline;color: rgb(215, 119, 87);">&#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;                                                    </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474; </div><div style="display: inline;color: rgb(215, 119, 87);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; &#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;                       &#9616;</div><div style="display: inline;color: rgb(215, 119, 87);background-color: rgb(0, 0, 0);">&#9627;&#9608;&#9608;&#9608;&#9628;</div><div style="display: inline;color: rgb(215, 119, 87);">&#9612;                      </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474; </div><div style="display: inline;color: rgb(215, 119, 87);font-weight: bold;">What&#39;s new                                                                                                                                                                                                              </div><div style="display: inline;color: rgb(215, 119, 87);">&#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;                      &#9629;&#9628;</div><div style="display: inline;color: rgb(215, 119, 87);background-color: rgb(0, 0, 0);">&#9608;&#9608;&#9608;&#9608;&#9608;</div><div style="display: inline;color: rgb(215, 119, 87);">&#9627;&#9624;                     </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474; </div>Added `claude mcp login &lt;name&gt;` and `claude mcp logout &lt;name&gt;` to authenticate MCP servers from the CLI without opening the interactive `/mcp` menu, with `--no-browser` stdin redirect support for completing over SSH <div style="display: inline;color: rgb(215, 119, 87);">&#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;                        &#9624;&#9624; &#9629;&#9629;                       </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474; </div>Added status filtering (press `f`) to the `/workflows` agent detail view                                                                                                                                                <div style="display: inline;color: rgb(215, 119, 87);">&#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;   </div><div style="display: inline;color: rgb(153, 153, 153);">Opus 4.8 (1M context) with xh&#8230; &#183; Claude Max &#183;    </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474; </div>Added a &quot;Skills&quot; section to the `/plugin` Installed tab                                                                                                                                                                 <div style="display: inline;color: rgb(215, 119, 87);">&#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;   </div><div style="display: inline;color: rgb(153, 153, 153);">adam@zethrae.us&#39;s Organization                   </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474; </div><div style="display: inline;color: rgb(153, 153, 153);font-style: italic;">/release-notes for more                                                                                                                                                                                                 </div><div style="display: inline;color: rgb(215, 119, 87);">&#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9474;      </div><div style="display: inline;color: rgb(153, 153, 153);">~/Developer/GoodHatsLLC/no-ai-coauthors       </div><div style="display: inline;color: rgb(215, 119, 87);opacity: 0.5;">&#9474;                                                                                                                                                                                                                         </div><div style="display: inline;color: rgb(215, 119, 87);">&#9474;</div>
+<div style="display: inline;color: rgb(215, 119, 87);">&#9584;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9583;</div>
+
+
+<div style="display: inline;color: rgb(80, 80, 80);background-color: rgb(55, 55, 55);">&#10095; </div><div style="display: inline;color: rgb(255, 255, 255);background-color: rgb(55, 55, 55);">please make a manifesto-style marketing website for this project.</div><div style="display: inline;background-color: rgb(55, 55, 55);">                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>I&#39;ll start by understanding what this project actually does, then build a manifesto-style marketing site around it. Let me explore the codebase.
+
+  <div style="display: inline;color: rgb(153, 153, 153);">Listed </div><div style="display: inline;color: rgb(153, 153, 153);font-weight: bold;">1</div><div style="display: inline;color: rgb(153, 153, 153);"> directory (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Let me read the key files to understand the project fully.
+
+  <div style="display: inline;color: rgb(153, 153, 153);">Read </div><div style="display: inline;color: rgb(153, 153, 153);font-weight: bold;">1</div><div style="display: inline;color: rgb(153, 153, 153);"> file (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Now let me read the core implementation and supporting files in parallel.
+
+  <div style="display: inline;color: rgb(153, 153, 153);">Read </div><div style="display: inline;color: rgb(153, 153, 153);font-weight: bold;">4</div><div style="display: inline;color: rgb(153, 153, 153);"> files (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>I have a solid understanding now. Let me check the examples and tests quickly to capture all installation methods and the exact tone.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(for f in examples/* tests/run.sh .pre-commit-hooks.yaml lefthook.yml; do echo &quot;===== $f =====&quot;; cat &quot;$f&quot;; echo; done)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>===== examples/github-action.yml =====
+     name: no-ai-coauthors
+     <div style="display: inline;opacity: 0.5;">&#8230; +204 lines (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>I now understand the project completely. Let me share an insight before I design, then pull in the frontend-design guidance since a manifesto site lives or dies on its visual conviction.
+
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9733; Insight &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+  - <div style="display: inline;font-weight: bold;">The product is an argument, not just a script. </div>The entire 18-line manifesto already lives inside a <div style="display: inline;color: rgb(177, 185, 249);">&gt; [!IMPORTANT] </div>callout in the README. The marketing site&#39;s job is to take prose that&#39;s currently buried in a code repo and give it the typographic weight of a thesis nailed to a door.
+  - <div style="display: inline;font-weight: bold;">The core mechanic is a </div><div style="display: inline;font-weight: bold;font-style: italic;">rejection</div>. The hook&#39;s whole behavior is: scan a commit message, find an AI <div style="display: inline;color: rgb(177, 185, 249);">Co-authored-by:</div>/<div style="display: inline;color: rgb(177, 185, 249);">Claude-Session: </div>trailer, and refuse the commit. That gives me a perfect central visual metaphor &#8212; a commit message with the AI line being struck out / redacted.
+  - <div style="display: inline;font-weight: bold;">Brand signals are already set. </div><div style="display: inline;color: rgb(177, 185, 249);">action.yml </div>declares <div style="display: inline;color: rgb(177, 185, 249);">color: red </div>and <div style="display: inline;color: rgb(177, 185, 249);">icon: git-commit</div>. I&#39;ll honor that: a black/off-white/red palette with a monospace-meets-editorial voice, so the site feels continuous with the tool itself.
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+
+  Let me pull the frontend-design guidance before committing to an aesthetic.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Skill</div>(frontend-design:frontend-design)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>Successfully loaded skill
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>This is a great brief for a strong, opinionated design. Let me lock my design plan before writing a line of code.
+
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9733; Insight &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+  - <div style="display: inline;font-weight: bold;">The typographic concept encodes the thesis. </div>I&#39;m pairing exactly two voices: <div style="display: inline;font-weight: bold;">Fraunces </div>(a characterful optical serif = the accountable <div style="display: inline;font-style: italic;">human</div>) and <div style="display: inline;font-weight: bold;">IBM Plex Mono </div>(= the <div style="display: inline;font-style: italic;">machine </div>/ the tooling). Authorship is precisely the boundary between those two &#8212; so the type system itself argues the manifesto.
+  - <div style="display: inline;font-weight: bold;">One spot color, used literally. </div>Red isn&#39;t decoration here; <div style="display: inline;color: rgb(177, 185, 249);">action.yml </div>ships <div style="display: inline;color: rgb(177, 185, 249);">color: red </div>and the tool&#39;s entire job is the red <div style="display: inline;color: rgb(177, 185, 249);">- </div>deletion line of a rejected commit. So red appears <div style="display: inline;font-style: italic;">only </div>where something is being struck out &#8212; the same place git itself uses it.
+  - <div style="display: inline;font-weight: bold;">Avoiding the AI-design defaults deliberately. </div>The generic &quot;manifesto&quot; answer is cream + serif + terracotta on a broadsheet. I keep the paper + serif gravitas a manifesto needs, but swap terracotta&#8594;git-red and carry all structure on a real <div style="display: inline;font-style: italic;">diff/patch </div>scaffold (line gutters, <div style="display: inline;color: rgb(177, 185, 249);">-</div>/<div style="display: inline;color: rgb(177, 185, 249);">+ </div>marks, hunk headers) &#8212; numbering that&#39;s true to the content, not decorative.
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+
+  My signature element: a live commit-message card where the AI <div style="display: inline;color: rgb(177, 185, 249);">Co-Authored-By:</div>/<div style="display: inline;color: rgb(177, 185, 249);">Claude-Session: </div>trailers are struck out as red <div style="display: inline;color: rgb(177, 185, 249);">- </div>diff deletions while the human author survives &#8212; animating from &quot;&#10007; rejected&quot; to &quot;&#10003; accepted.&quot; A nice real detail I&#39;ll surface: the test suite deliberately <div style="display: inline;font-style: italic;">passes </div>a human named <div style="display: inline;font-weight: bold;">Claude Shannon </div>&#8212; &quot;blocks the bot named Claude, keeps the human named Claude Shannon.&quot;
+
+  Let me build it as a single dependency-free <div style="display: inline;color: rgb(177, 185, 249);">index.html</div>, matching the project&#39;s no-toolchain ethos.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Write</div>(<a href="file:///Users/adamz/Developer/GoodHatsLLC/no-ai-coauthors/site/index.html">site/index.html</a>)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>Wrote <div style="display: inline;font-weight: bold;">796 </div>lines to <div style="display: inline;font-weight: bold;">site/index.html</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  1 </div><div style="display: inline;color: rgb(117, 113, 94);">&lt;!doctype </div><div style="display: inline;color: rgb(248, 248, 242);">html</div><div style="display: inline;color: rgb(117, 113, 94);">&gt;</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  2 </div><div style="display: inline;color: rgb(248, 248, 242);">&lt;html </div><div style="display: inline;color: rgb(166, 226, 46);">lang</div><div style="display: inline;color: rgb(248, 248, 242);">=</div><div style="display: inline;color: rgb(230, 219, 116);">&quot;en&quot;</div><div style="display: inline;color: rgb(248, 248, 242);">&gt;</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  3 </div><div style="display: inline;color: rgb(248, 248, 242);">&lt;head&gt;</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  4 </div><div style="display: inline;color: rgb(248, 248, 242);">&lt;meta </div><div style="display: inline;color: rgb(166, 226, 46);">charset</div><div style="display: inline;color: rgb(248, 248, 242);">=</div><div style="display: inline;color: rgb(230, 219, 116);">&quot;utf-8&quot;</div><div style="display: inline;color: rgb(248, 248, 242);"> /&gt;</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  5 </div><div style="display: inline;color: rgb(248, 248, 242);">&lt;meta </div><div style="display: inline;color: rgb(166, 226, 46);">name</div><div style="display: inline;color: rgb(248, 248, 242);">=</div><div style="display: inline;color: rgb(230, 219, 116);">&quot;viewport&quot;</div><div style="display: inline;color: rgb(248, 248, 242);"> </div><div style="display: inline;color: rgb(166, 226, 46);">content</div><div style="display: inline;color: rgb(248, 248, 242);">=</div><div style="display: inline;color: rgb(230, 219, 116);">&quot;width=device-width, initial-scale=1&quot;</div><div style="display: inline;color: rgb(248, 248, 242);"> /&gt;</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  6 </div><div style="display: inline;color: rgb(248, 248, 242);">&lt;title&gt;no-ai-coauthors &#8212; the byline is not shared&lt;/title&gt;</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  7 </div><div style="display: inline;color: rgb(248, 248, 242);">&lt;meta </div><div style="display: inline;color: rgb(166, 226, 46);">name</div><div style="display: inline;color: rgb(248, 248, 242);">=</div><div style="display: inline;color: rgb(230, 219, 116);">&quot;description&quot;</div><div style="display: inline;color: rgb(248, 248, 242);"> </div><div style="display: inline;color: rgb(166, 226, 46);">content</div><div style="display: inline;color: rgb(248, 248, 242);">=</div><div style="display: inline;color: rgb(230, 219, 116);">&quot;A commit-msg hook and GitHub Action that rejects AI attribution trailers. The author is, as ever, the contributing person.&quot;</div><div style="display: inline;color: rgb(248, 248, 242);"> /&gt;</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  8 </div><div style="display: inline;color: rgb(248, 248, 242);">&lt;meta </div><div style="display: inline;color: rgb(166, 226, 46);">name</div><div style="display: inline;color: rgb(248, 248, 242);">=</div><div style="display: inline;color: rgb(230, 219, 116);">&quot;color-scheme&quot;</div><div style="display: inline;color: rgb(248, 248, 242);"> </div><div style="display: inline;color: rgb(166, 226, 46);">content</div><div style="display: inline;color: rgb(248, 248, 242);">=</div><div style="display: inline;color: rgb(230, 219, 116);">&quot;light&quot;</div><div style="display: inline;color: rgb(248, 248, 242);"> /&gt;</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;">  9</div>
+     <div style="display: inline;color: rgb(248, 248, 242);opacity: 0.5;"> 10 </div><div style="display: inline;color: rgb(117, 113, 94);">&lt;!-- Open Graph --&gt;</div>
+     <div style="display: inline;color: rgb(153, 153, 153);">&#8230; +786 lines (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>The page is built. Now let me critique it visually &#8212; a picture is worth 1000 tokens. Let me try to render a screenshot with a headless browser.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(SITE=&quot;/Users/adamz/Developer/GoodHatsLLC/no-ai-coauthors/site/index.html&quot;
+      OUT=&quot;/private/tmp/claude-501/-Users-adamz-Developer-GoodHatsLLC-no-ai-coauthors/cc074f&#8230;)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>FOUND: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+     exit: 0
+     total 456
+     <div style="display: inline;opacity: 0.5;">&#8230; +3 lines (ctrl+o to expand)</div>
+
+  <div style="display: inline;color: rgb(153, 153, 153);">Read </div><div style="display: inline;color: rgb(153, 153, 153);font-weight: bold;">1</div><div style="display: inline;color: rgb(153, 153, 153);"> file (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Strong start &#8212; hero, manifesto, and ledger are reading well. Let me capture the lower sections (install, mechanism, closer) to critique those too. I&#39;ll render the full page tall and an anchored view of the install section.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(SITE=&quot;/Users/adamz/Developer/GoodHatsLLC/no-ai-coauthors/site/index.html&quot;
+      OUT=&quot;/private/tmp/claude-501/-Users-adamz-Developer-GoodHatsLLC-no-ai-coauthors/cc074f&#8230;)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>done
+     total 1824
+     drwx------ 6 adamz wheel     192 Jun 23 20:24 .
+     <div style="display: inline;opacity: 0.5;">&#8230; +5 lines (ctrl+o to expand)</div>
+
+  <div style="display: inline;color: rgb(153, 153, 153);">Read </div><div style="display: inline;color: rgb(153, 153, 153);font-weight: bold;">1</div><div style="display: inline;color: rgb(153, 153, 153);"> file (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Excellent &#8212; the full page flows beautifully end to end. Now let me verify the mobile layout holds up.
+
+  <div style="display: inline;color: rgb(153, 153, 153);">Read </div><div style="display: inline;color: rgb(153, 153, 153);font-weight: bold;">1</div><div style="display: inline;color: rgb(153, 153, 153);"> file (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Mobile holds up well &#8212; the hero stacks cleanly, the commit card and manifesto reflow correctly. The full design is cohesive across breakpoints. Let me confirm I haven&#39;t disturbed the project&#39;s own test suite (I only added a file, but worth verifying).
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(sh tests/run.sh &amp;&amp; echo &quot;---git status---&quot; &amp;&amp; git status --short)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>no-ai-coauthors fixture checks passed
+     ---git status---
+     ?? site/
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>All tests pass and the only change is the new <div style="display: inline;color: rgb(177, 185, 249);">site/ </div>directory &#8212; the project&#39;s own code is untouched.
+
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9733; Insight &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div></div><div style="font-family: monospace; white-space: pre;background-color: #2d2a2e;color: #fcfcfa;">
+  - <div style="display: inline;font-weight: bold;">The &quot;no-toolchain&quot; ethos is honored in the deliverable itself. </div>This project&#39;s whole selling point is &quot;POSIX <div style="display: inline;color: rgb(177, 185, 249);">sh </div>+ <div style="display: inline;color: rgb(177, 185, 249);">awk</div>, no Node/Python/Ruby runtime.&quot; So I built the site the same way: one hand-written <div style="display: inline;color: rgb(177, 185, 249);">index.html</div>, zero build step, zero dependencies (fonts are the only network call, with full system-font fallbacks). The medium matches the message.
+  - <div style="display: inline;font-weight: bold;">Every example on the page is verified against the actual </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">awk</div><div style="display: inline;font-weight: bold;"> matcher</div>, not invented. <div style="display: inline;color: rgb(177, 185, 249);">Claude Opus 4.8 &lt;noreply@anthropic.com&gt; </div>normalizes to <div style="display: inline;color: rgb(177, 185, 249);">claude opus 4 8 </div>and matches the real regex; <div style="display: inline;color: rgb(177, 185, 249);">Claude Shannon &lt;claude.shannon@example.com&gt; </div>deliberately does <div style="display: inline;font-style: italic;">not </div>&#8212; which is exactly why the test suite uses it as the &quot;human passes&quot; fixture. The site teaches the tool&#39;s real behavior.
+  - <div style="display: inline;font-weight: bold;">Accessibility was built into the floor, not bolted on: </div>the animated commit card carries a descriptive <div style="display: inline;color: rgb(177, 185, 249);">role=&quot;img&quot; </div>+ <div style="display: inline;color: rgb(177, 185, 249);">aria-label </div>so screen readers get the whole story prose; all motion sits behind <div style="display: inline;color: rgb(177, 185, 249);">prefers-reduced-motion</div>; tabs are real <div style="display: inline;color: rgb(177, 185, 249);">role=&quot;tab&quot; </div>with arrow-key navigation; focus rings are visible in the spot red.
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+
+  <div style="display: inline;font-weight: bold;">What I built</div>
+
+  A single-file manifesto marketing site at <div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">site/index.html </div>(no build, open it directly in a browser).
+
+  <div style="display: inline;font-weight: bold;">The design concept </div>&#8212; the type system <div style="display: inline;font-style: italic;">is </div>the argument. Two voices only:
+  - <div style="display: inline;font-weight: bold;">Fraunces </div>(an optical serif) = the accountable <div style="display: inline;font-weight: bold;">human</div>
+  - <div style="display: inline;font-weight: bold;">IBM Plex Mono </div>= the <div style="display: inline;font-weight: bold;">machine </div>/ the tooling
+
+  Authorship is precisely the boundary between those two &#8212; so the page literally argues the manifesto through its typography. The one spot color, <div style="display: inline;font-weight: bold;">git-red</div>, appears <div style="display: inline;font-style: italic;">only </div>where something is struck out (deletion lines, the rejection stamp) &#8212; the same place git itself uses red. The structural scaffolding (<div style="display: inline;color: rgb(177, 185, 249);">@@ why @@ </div>hunk markers, <div style="display: inline;color: rgb(177, 185, 249);">-</div>/<div style="display: inline;color: rgb(177, 185, 249);">+ </div>gutters, line numbers) is a real diff/patch motif, not decoration &#8212; numbering that&#39;s true to the content.
+
+  <div style="display: inline;font-weight: bold;">The sections:</div>
+  1. <div style="display: inline;font-weight: bold;">Hero </div>&#8212; headline &quot;No AI co-authors&quot; with a live commit card that animates from <div style="display: inline;color: rgb(177, 185, 249);">&#10007; rejected </div>to <div style="display: inline;color: rgb(177, 185, 249);">&#10003; accepted</div>, striking the <div style="display: inline;color: rgb(177, 185, 249);">Co-Authored-By: Claude&#8230; </div>and <div style="display: inline;color: rgb(177, 185, 249);">Claude-Session: </div>lines as red deletions while the human author survives.
+  2. <div style="display: inline;font-weight: bold;">Manifesto </div>&#8212; your full README manifesto, set as a dark proclamation with the pull quote <div style="display: inline;font-style: italic;">&quot;The &#39;author&#39; is, as ever, the contributing person.&quot;</div>
+  3. <div style="display: inline;font-weight: bold;">What it catches </div>&#8212; a two-column ledger: <div style="display: inline;font-style: italic;">Rejected </div>(real blocked trailers + a chip cloud of ~18 more tools) vs <div style="display: inline;font-style: italic;">Kept</div>, ending on the line <div style="display: inline;font-style: italic;">&quot;It blocks the bot named Claude. It welcomes the human named Claude Shannon.&quot;</div>
+  4. <div style="display: inline;font-weight: bold;">The mechanism </div>&#8212; <div style="display: inline;color: rgb(177, 185, 249);">sh</div>+<div style="display: inline;color: rgb(177, 185, 249);">awk</div>, caught at commit time, re-enforced in CI.
+  5. <div style="display: inline;font-weight: bold;">Install </div>&#8212; tabbed, copy-to-clipboard install paths (pre-commit, prek, Lefthook, GitHub Actions, plain Git, Husky) using the real <div style="display: inline;color: rgb(177, 185, 249);">1.0.0</div>-pinned commands from your README.
+  6. <div style="display: inline;font-weight: bold;">Closer </div>&#8212; <div style="display: inline;font-style: italic;">&quot;Your name is on the commit. Mean it.&quot;</div>
+
+  I verified it renders correctly at desktop (1440px) and mobile (390px).
+
+  <div style="display: inline;font-weight: bold;">To publish it</div>
+
+  GitHub Pages can only serve from the repo root or a <div style="display: inline;color: rgb(177, 185, 249);">/docs </div>folder on a branch. Two easy options:
+  - <div style="display: inline;font-weight: bold;">Zero-config: </div>rename <div style="display: inline;color: rgb(177, 185, 249);">site/ </div>&#8594; <div style="display: inline;color: rgb(177, 185, 249);">docs/</div>, then set Pages &#8594; &quot;Deploy from branch &#8594; <div style="display: inline;color: rgb(177, 185, 249);">/docs</div>&quot;.
+  - <div style="display: inline;font-weight: bold;">Keep </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">site/</div><div style="display: inline;font-weight: bold;">: </div>I can add a tiny Pages Actions workflow that uploads <div style="display: inline;color: rgb(177, 185, 249);">site/ </div>&#8212; fits the repo, which already uses Actions.
+
+  Want me to rename it to <div style="display: inline;color: rgb(177, 185, 249);">docs/</div>, or wire up the Pages workflow?
+
+<div style="display: inline;color: rgb(153, 153, 153);">&#10043; Worked for 7m 57s</div>
+
+<div style="display: inline;color: rgb(80, 80, 80);background-color: rgb(55, 55, 55);">&#10095; </div><div style="display: inline;color: rgb(255, 255, 255);background-color: rgb(55, 55, 55);">rename it to docs</div><div style="display: inline;background-color: rgb(55, 55, 55);">                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>I&#39;ll rename <div style="display: inline;color: rgb(177, 185, 249);">site/ </div>to <div style="display: inline;color: rgb(177, 185, 249);">docs/ </div>so GitHub Pages can serve it with zero config.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(git mv site docs 2&gt;/dev/null || mv site docs; ls -la docs &amp;&amp; echo &quot;---status---&quot; &amp;&amp; git status --short)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>total 40
+     drwxr-xr-x  3 adamz staff    96 Jun 23 20:23 .
+     drwxr-xr-x 15 adamz staff   480 Jun 23 20:26 ..
+     <div style="display: inline;opacity: 0.5;">&#8230; +3 lines (ctrl+o to expand)</div>
+
+  <div style="display: inline;color: rgb(153, 153, 153);">Searched for </div><div style="display: inline;color: rgb(153, 153, 153);font-weight: bold;">1</div><div style="display: inline;color: rgb(153, 153, 153);"> pattern (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Done. The site now lives at <div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">docs/index.html</div>.
+
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9733; Insight &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+  - <div style="display: inline;font-weight: bold;">The rename was free because the site has no internal path coupling. </div>Every asset is either inlined (CSS, JS, the SVG grain/logo as data URIs) or absolute (Google Fonts CDN). A self-contained single file is portable by construction &#8212; moving the folder can&#39;t break it.
+  - <div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">git mv</div><div style="display: inline;font-weight: bold;"> correctly fell back to plain </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">mv </div>here: <div style="display: inline;color: rgb(177, 185, 249);">git mv </div>only works on tracked files, and <div style="display: inline;color: rgb(177, 185, 249);">site/ </div>was never committed. The end state is identical &#8212; <div style="display: inline;color: rgb(177, 185, 249);">docs/ </div>is staged as a new untracked directory, ready to commit.
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+
+  To publish: in the repo&#39;s <div style="display: inline;font-weight: bold;">Settings &#8594; Pages</div>, set <div style="display: inline;font-weight: bold;">Source: Deploy from a branch</div>, <div style="display: inline;font-weight: bold;">Branch: </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">main</div><div style="display: inline;font-weight: bold;"> / </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">/docs</div>. GitHub will serve the manifesto at <div style="display: inline;color: rgb(177, 185, 249);">https://goodhatsllc.github.io/no-ai-coauthors/ </div>with no workflow or build step needed.
+
+  One small note: your <div style="display: inline;color: rgb(177, 185, 249);">package.json files </div>array lists what ships to npm &#8212; <div style="display: inline;color: rgb(177, 185, 249);">docs/ </div>isn&#39;t in it, so the marketing site won&#39;t bloat the published package. That&#39;s the right default; no change needed unless you want it included.
+
+  The site is committed-ready whenever you are &#8212; I haven&#39;t run <div style="display: inline;color: rgb(177, 185, 249);">git add</div>/<div style="display: inline;color: rgb(177, 185, 249);">commit </div>since you didn&#39;t ask. Want me to commit it?
+
+<div style="display: inline;color: rgb(153, 153, 153);">&#10043; Brewed for 23s</div>
+
+<div style="display: inline;color: rgb(80, 80, 80);background-color: rgb(55, 55, 55);">&#10095; </div><div style="display: inline;color: rgb(255, 255, 255);background-color: rgb(55, 55, 55);">please</div><div style="display: inline;background-color: rgb(55, 55, 55);">                                                                                                                                                                                                                                                                                                                                                                                                                                                                               </div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Before I commit &#8212; there&#39;s a delicious irony to handle correctly here.
+
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9733; Insight &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+  - This repo is <div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">no-ai-coauthors </div>&#8212; a tool whose entire job is to <div style="display: inline;font-style: italic;">reject </div><div style="display: inline;color: rgb(177, 185, 249);">Co-Authored-By: Claude&#8230; </div>and <div style="display: inline;color: rgb(177, 185, 249);">Claude-Session: </div>trailers. Adding those trailers to a commit here would be self-refuting, and the repo even ships its own <div style="display: inline;color: rgb(177, 185, 249);">commit-msg </div>hook that could block it. So this commit will carry <div style="display: inline;font-weight: bold;">no AI attribution </div>&#8212; which is also consistent with your global &quot;attribution disabled&quot; setting. The project should practice what it preaches.
+  - Per the safe-git default, I&#39;ll branch off <div style="display: inline;color: rgb(177, 185, 249);">main </div>rather than commit straight to the default branch, so you keep a review point before it lands.
+  <div style="display: inline;color: rgb(177, 185, 249);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+
+  Let me check whether the repo&#39;s own hook is active, then branch and commit.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(echo &quot;core.hooksPath = $(git config --get core.hooksPath || echo &#39;(unset)&#39;)&quot;
+      echo &quot;--- creating branch ---&quot;&#8230;)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>core.hooksPath = (unset)
+     --- creating branch ---
+     Switched to a new branch &#39;marketing-site&#39;
+     A  docs/index.html
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Hook isn&#39;t active (<div style="display: inline;color: rgb(177, 185, 249);">core.hooksPath </div>unset), so no self-rejection risk. Now the commit &#8212; clean, no AI trailers, matching your repo&#39;s concise message style.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(git commit -m &quot;Add manifesto marketing site&#8230;)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>[marketing-site 41a5253] Add manifesto marketing site
+      1 file changed, 796 insertions(+)
+      create mode 100644 docs/index.html
+     <div style="display: inline;opacity: 0.5;">&#8230; +6 lines (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>Committed on branch <div style="display: inline;color: rgb(177, 185, 249);">marketing-site </div>with a verified-clean message. As a final flourish, let me run the project&#39;s <div style="display: inline;font-style: italic;">own </div>hook against this very commit message &#8212; the tool should approve its own commit.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(git log -1 --format=&#39;%B&#39; &gt; /tmp/this-commit-msg.txt
+      if ./hooks/no-ai-coauthors /tmp/this-commit-msg.txt; then&#8230;)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>&#10003; no-ai-coauthors approves its own commit
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210; </div>The tool approves its own commit &#8212; the project eats its own dog food.
+
+  <div style="display: inline;font-weight: bold;">Done</div>
+
+  The manifesto site is committed on branch <div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">marketing-site </div>(commit <div style="display: inline;color: rgb(177, 185, 249);">41a5253</div>, <div style="display: inline;color: rgb(177, 185, 249);">docs/index.html</div>, +796 lines), with a deliberately clean message &#8212; no <div style="display: inline;color: rgb(177, 185, 249);">Co-Authored-By: Claude&#8230;</div>, no <div style="display: inline;color: rgb(177, 185, 249);">Claude-Session:</div>, consistent with both your global &quot;attribution disabled&quot; setting and the project&#39;s entire reason for existing.
+
+  <div style="display: inline;font-weight: bold;">State:</div>
+  - Branch: <div style="display: inline;color: rgb(177, 185, 249);">marketing-site </div>(one commit ahead of <div style="display: inline;color: rgb(177, 185, 249);">main</div>)
+  - <div style="display: inline;color: rgb(177, 185, 249);">main </div>is untouched &#8212; your review point is preserved
+  - Tests pass; the hook approves its own commit
+
+  <div style="display: inline;font-weight: bold;">The one remaining step is yours to choose. </div>GitHub Pages serves from <div style="display: inline;color: rgb(177, 185, 249);">main /docs</div>, so the site won&#39;t go live until this lands on <div style="display: inline;color: rgb(177, 185, 249);">main</div>. To merge it locally:
+
+  git switch main &amp;&amp; git merge --ff-only marketing-site
+
+  Then push, and set <div style="display: inline;font-weight: bold;">Settings &#8594; Pages &#8594; Deploy from a branch &#8594; </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">main</div><div style="display: inline;font-weight: bold;"> / </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">/docs</div>.
+
+  Want me to merge it into <div style="display: inline;color: rgb(177, 185, 249);">main </div>for you, or leave the branch as-is for you to review and merge?</div><div style="font-family: monospace; white-space: pre;background-color: #2d2a2e;color: #fcfcfa;">
+
+<div style="display: inline;color: rgb(153, 153, 153);">&#10043; Worked for 1m 8s</div>
+
+<div style="display: inline;color: rgb(80, 80, 80);background-color: rgb(55, 55, 55);">&#10095; </div><div style="display: inline;color: rgb(255, 255, 255);background-color: rgb(55, 55, 55);">please merge to main</div><div style="display: inline;background-color: rgb(55, 55, 55);">                                                                                                                                                                                                                                                                                                                                                                                                                                                                 </div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210;</div> I&#39;ll merge <div style="display: inline;color: rgb(177, 185, 249);">marketing-site </div>into <div style="display: inline;color: rgb(177, 185, 249);">main </div>with a fast-forward.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210;</div> <div style="display: inline;font-weight: bold;">Bash</div>(git switch main &amp;&amp; git merge --ff-only marketing-site
+      echo &quot;--- result ---&quot;&#8230;)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>Switched to branch &#39;main&#39;
+     Your branch is up to date with &#39;origin/main&#39;.
+     Updating b70396b..41a5253
+     <div style="display: inline;opacity: 0.5;">&#8230; +11 lines (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210;</div> Merged cleanly into <div style="display: inline;color: rgb(177, 185, 249);">main </div>via fast-forward &#8212; <div style="display: inline;color: rgb(177, 185, 249);">main </div>is now at <div style="display: inline;color: rgb(177, 185, 249);">41a5253 </div>and includes <div style="display: inline;color: rgb(177, 185, 249);">docs/index.html</div>.
+
+  <div style="display: inline;font-weight: bold;">Current state:</div>
+  - &#9989; On <div style="display: inline;color: rgb(177, 185, 249);">main</div>, history is linear (no merge commit)
+  - &#128228; <div style="display: inline;color: rgb(177, 185, 249);">main</div> is <div style="display: inline;font-weight: bold;">ahead of </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">origin/main</div><div style="display: inline;font-weight: bold;"> by 1</div> &#8212; not yet pushed
+  - &#127807; The <div style="display: inline;color: rgb(177, 185, 249);">marketing-site</div> branch still exists locally (now redundant, fully merged)
+
+  <div style="display: inline;font-weight: bold;">To go live, two things remain &#8212; both yours to authorize:</div>
+
+  1. <div style="display: inline;font-weight: bold;">Push </div>so the commit reaches the remote (Pages serves from the remote <div style="display: inline;color: rgb(177, 185, 249);">main</div>):
+  git push origin main
+  2. <div style="display: inline;font-weight: bold;">Enable Pages: </div>Settings &#8594; Pages &#8594; Deploy from a branch &#8594; <div style="display: inline;color: rgb(177, 185, 249);">main </div>/ <div style="display: inline;color: rgb(177, 185, 249);">/docs </div>&#8594; the site appears at <div style="display: inline;color: rgb(177, 185, 249);">https://goodhatsllc.github.io/no-ai-coauthors/</div>.
+
+  Want me to <div style="display: inline;font-weight: bold;">push to </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">origin/main </div>now, and <div style="display: inline;font-weight: bold;">delete the leftover </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">marketing-site</div><div style="display: inline;font-weight: bold;"> branch</div>? I&#39;ll hold on both until you say so, since pushing is outward-facing.
+
+<div style="display: inline;color: rgb(153, 153, 153);">&#10043;</div> <div style="display: inline;color: rgb(153, 153, 153);">Saut&#233;ed for 18s</div>
+
+<div style="display: inline;color: rgb(80, 80, 80);background-color: rgb(55, 55, 55);">&#10095; </div><div style="display: inline;color: rgb(255, 255, 255);background-color: rgb(55, 55, 55);">yes</div><div style="display: inline;background-color: rgb(55, 55, 55);">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  </div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210;</div> I&#39;ll push to <div style="display: inline;color: rgb(177, 185, 249);">origin/main </div>and delete the merged <div style="display: inline;color: rgb(177, 185, 249);">marketing-site </div>branch.
+
+<div style="display: inline;color: rgb(78, 186, 101);">&#9210; </div><div style="display: inline;font-weight: bold;">Bash</div>(git push origin main
+      echo &quot;--- delete merged branch ---&quot;&#8230;)
+<div style="display: inline;color: rgb(153, 153, 153);">  &#9151; &#160;</div>To github.com:GoodHatsLLC/no-ai-coauthors.git
+        b70396b..41a5253  main -&gt; main
+     --- delete merged branch ---
+     <div style="display: inline;opacity: 0.5;">&#8230; +5 lines (ctrl+o to expand)</div>
+
+<div style="display: inline;color: rgb(255, 255, 255);">&#9210;</div> Done &#8212; pushed and cleaned up.
+
+  - &#128228; <div style="display: inline;font-weight: bold;">Pushed: </div><div style="display: inline;color: rgb(177, 185, 249);">b70396b..41a5253 main -&gt; main </div>&#8212; <div style="display: inline;color: rgb(177, 185, 249);">docs/index.html </div>is now on <div style="display: inline;color: rgb(177, 185, 249);">origin/main</div>
+  - &#127807; <div style="display: inline;font-weight: bold;">Deleted</div> the merged <div style="display: inline;color: rgb(177, 185, 249);">marketing-site</div> branch
+  - &#9989; Working tree clean; <div style="display: inline;color: rgb(177, 185, 249);">main </div>is in sync with <div style="display: inline;color: rgb(177, 185, 249);">origin/main</div>
+
+  <div style="display: inline;font-weight: bold;">One step left, and it&#39;s in the GitHub UI (I can&#39;t do it for you):</div>
+  Settings &#8594; Pages &#8594; <div style="display: inline;font-weight: bold;">Source: Deploy from a branch </div>&#8594; <div style="display: inline;font-weight: bold;">Branch: </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">main</div><div style="display: inline;font-weight: bold;"> / </div><div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">/docs </div>&#8594; Save.
+
+  The manifesto will publish at <div style="display: inline;color: rgb(177, 185, 249);font-weight: bold;">https://goodhatsllc.github.io/no-ai-coauthors/ </div>(first build takes a minute or two). If you&#39;d rather serve it from a custom domain or via a Pages Actions workflow instead of the branch source, I can wire that up.
+
+  Fitting close: the commit that ships a site arguing <div style="display: inline;font-style: italic;">against </div>AI co-author bylines carries none itself &#8212; and the project&#39;s own hook signed off on it.
+
+<div style="display: inline;color: rgb(153, 153, 153);">&#10043;</div> <div style="display: inline;color: rgb(153, 153, 153);">Cogitated for 14s</div>
+
+<div style="display: inline;color: rgb(136, 136, 136);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+&#10095;&#160;<div style="display: inline;opacity: 0.5;">add a custom domain to the pages site</div>
+<div style="display: inline;color: rgb(136, 136, 136);">&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>
+  <div style="display: inline;color: rgb(255, 216, 102);">adamz</div><div style="display: inline;color: rgb(153, 153, 153);"> </div><div style="display: inline;color: rgb(120, 220, 232);">&#8230;/Developer/GoodHatsLLC/no-ai-coauthors</div><div style="display: inline;color: rgb(169, 220, 118);"> main</div><div style="display: inline;color: rgb(252, 152, 103);"> Opus 4.8 (1M context)</div><div style="display: inline;color: rgb(114, 112, 114);"> ctx:11% 5h:2% [Create manifesto-style marketing website]</div>                                                                                                                                                                                                                                                                                                                                               <div style="display: inline;color: rgb(78, 186, 101);"><a href="https://claude.ai/code/session_01T6c77wg8cYMahb17f4PQMq">/rc</div>
+  <div style="display: inline;color: rgb(255, 193, 7);"></a>&#9205;&#9205; auto mode on</div><div style="display: inline;color: rgb(153, 153, 153);"> (shift+tab to cycle) &#183; &#8592; for agents</div></div><!-- ===== end verbatim session transcript ===== -->
+
+<footer class="mo-foot">
+  <a href="index.html">&uarr; Back to the manifesto</a>
+</footer>
+
+</body>
+</html>
